@@ -1,27 +1,37 @@
 import os
+import threading
 import discord
+from flask import Flask
 from google import genai
 from google.genai import types
 
-# Initialize clients
+app = Flask(__name__)
+
+@app.route('/')
+def home():
+    return "Quix Bot is online!"
+
+def run_web():
+    port = int(os.environ.get("PORT", 10000))
+    app.run(host="0.0.0.0", port=port)
+
+threading.Thread(target=run_web, daemon=True).start()
+
 client = genai.Client(api_key=os.environ.get("GEMINI_API_KEY"))
 TOKEN = os.environ.get("DISCORD_TOKEN")
 
-# Read instructions file safely
 try:
     with open("instructions.txt", "r", encoding="utf-8") as f:
         instructions = f.read()
 except FileNotFoundError:
     instructions = "You are a helpful assistant."
 
-# Read knowledge file safely
 try:
     with open("knowledge.txt", "r", encoding="utf-8") as f:
         knowledge = f.read()
 except FileNotFoundError:
     knowledge = ""
 
-# Combine them into a single system instruction
 bot_system_prompt = f"{instructions}\n\nCustom Knowledge Base:\n{knowledge}"
 
 intents = discord.Intents.default()
