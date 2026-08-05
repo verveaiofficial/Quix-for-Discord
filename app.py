@@ -1,4 +1,35 @@
 import os
+from google import genai
+from google.genai import types
+
+client = genai.Client(api_key=os.environ.get("GEMINI_API_KEY"))
+
+# Load instructions
+try:
+    with open("instructions.txt", "r", encoding="utf-8") as f:
+        instructions = f.read()
+except FileNotFoundError:
+    instructions = "You are a helpful assistant."
+
+# Load knowledge
+try:
+    with open("knowledge.txt", "r", encoding="utf-8") as f:
+        knowledge = f.read()
+except FileNotFoundError:
+    knowledge = ""
+
+# Combine them into a single system instruction
+bot_system_prompt = f"{instructions}\n\nCustom Knowledge Base:\n{knowledge}"
+
+# Inside your message handling function when calling Gemini:
+response = client.models.generate_content(
+    model='gemini-2.5-flash',
+    contents=user_message,
+    config=types.GenerateContentConfig(
+        system_instruction=bot_system_prompt,
+        temperature=0.7
+    )
+) os
 import threading
 from flask import Flask
 import discord
