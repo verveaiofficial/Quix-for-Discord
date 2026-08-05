@@ -50,8 +50,9 @@ class MyClient(discord.Client):
             user_message = message.content.replace(f'<@!{self.user.id}>', '').replace(f'<@{self.user.id}>', '').strip()
             
             try:
-                response = client.models.generate_content(
-                    model='gemini-3.5-flash',
+                # Async call prevents blocking Discord's heartbeat
+                response = await client.aio.models.generate_content(
+                    model='gemini-2.0-flash-lite',
                     contents=user_message,
                     config=types.GenerateContentConfig(
                         system_instruction=bot_system_prompt,
