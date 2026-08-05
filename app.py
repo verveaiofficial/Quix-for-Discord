@@ -58,9 +58,13 @@ class MyClient(discord.Client):
                         temperature=0.7
                     )
                 )
-                await message.reply(response.text)
+                if response.text:
+                    await message.reply(response.text)
+                else:
+                    await message.reply("Received an empty response.")
             except Exception as e:
-                await message.reply("Oops, something went wrong processing that!")
+                print(f"Error details: {e}")
+                await message.reply(f"Error: {e}")
 
 client_bot = MyClient(intents=intents)
 
